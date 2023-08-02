@@ -8,14 +8,17 @@ class CategoryType(DjangoObjectType):
 class PostType(DjangoObjectType):
     class Meta:
         model = Post
-
+        
 class Query(graphene.ObjectType):
     allCategory = graphene.List(CategoryType)
-    allPost = graphene.List(PostType)
+    allPost = graphene.List(PostType, category_id=graphene.Int())
 
     def resolve_allCategory(self, info, **kwargs):
         return Category.objects.all()
-    def resolve_allPost(self,info, **kwargs):
+
+    def resolve_allPost(self, info, category_id=None, **kwargs):
+        if category_id:
+            return Post.objects.filter(category_id=category_id)
         return Post.objects.all()
 
 # post mutation
